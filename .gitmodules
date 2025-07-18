@@ -1,3 +1,6 @@
 [submodule "game"]
 	path = game
 	url = git@github.com:syncs-usyd/public-carcassonne-game-engine.git
+[submodule "public-carcassonne-game-engine"]
+	path = public-carcassonne-game-engine
+	url = https://github.com/syncs-usyd/public-carcassonne-game-engine.git
