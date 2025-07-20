@@ -1,5 +1,17 @@
 # check bounds of map
 
+# Priority checking process
+# Monastery Placement
+    # Check if our tile is a monastery
+    # If so, find placement where it is covered by most tiles
+
+
+# Finishing a city
+    # Check if our tile is a city
+    # Check current tiles if placing tile would complete city and city has our meeple
+
+
+
 from enum import Enum
 # use when running locally
 
@@ -19,6 +31,7 @@ from lib.interface.events.moves.typing import MoveType
 from lib.interact.structure import StructureType
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
 from lib.interface.queries.query_place_tile import QueryPlaceTile
+from lib.interact.tile import TileModifier, Tile
 
 
 class BotState:
@@ -64,9 +77,43 @@ def handle_place_tile(game : Game, bot_state: BotState, q):
     # Tiles placed on the map
     placed_tiles = game.state.map.placed_tiles
 
+    best_tile, index = None, None
 
-    for placed_tile in placed_tiles:
+    # fix this returns none on some occasions
+    def helper():
+        local_best_things = None
         for index, my_tile in enumerate(my_tiles):
+            for placed_tile in placed_tiles:
+                if TileModifier.MONASTARY in my_tile.modifiers:
+                    # checks for first valid spot around a certain tile rather than most optimum
+                    can_place, direction = check_direction_rotation(game, placed_tile, my_tile)
+                    if can_place:
+
+                        return my_tile, index, placed_tile, direction
+
+                else:
+                    print("Hi", my_tile)
+                    can_place, direction = check_direction_rotation(game, placed_tile, my_tile)
+                    if can_place:
+                        local_best_things = my_tile, index, placed_tile, direction
+        print("LOCAL STUFF", local_best_things, my_tile)
+        return local_best_things
+
+
+
+    best_tile, index, placed_tile, direction = helper()
+    bot_state.last_tile = best_tile
+    bot_state.last_tile.placed_pos = placed_tile.placed_pos[0] + direction.value[0], placed_tile.placed_pos[1] + direction.value[1]
+    return game.move_place_tile(q, bot_state.last_tile._to_model(), index)
+
+
+def check_direction_rotation(game: Game, placed_tile, my_tile):
+    for direction in Directions:
+        for rotation in range(0, 4):
+            # if a valid placement is found
+            return check_placement_of_tile(game, placed_tile, my_tile, direction, rotation), direction
+
+
 
             # Does the tile in hand have a river in it?
             river_tile = check_for_river(my_tile)
@@ -90,6 +137,10 @@ def handle_place_tile(game : Game, bot_state: BotState, q):
 
 
 
+def check_placement_of_tile(game: Game, placed_tile, my_tile, direction, rotation) -> bool:
+    my_tile.rotate_clockwise(rotation)
+    return game.can_place_tile_at(my_tile, placed_tile.placed_pos[0] + direction.value[0], placed_tile.placed_pos[1] + direction.value[1])
+
 # Function that check if the current has a river in it
 def check_for_river(tile: Tile)-> bool:
 
@@ -98,24 +149,12 @@ def check_for_river(tile: Tile)-> bool:
             return True
     return False;
 
-
-def check_placement_of_tile(game: Game, placed_tile, my_tile, direction, rotation) -> bool:
-    my_tile.rotate_clockwise(rotation)
-    return game.can_place_tile_at(my_tile, placed_tile.placed_pos[0] + direction.value[0], placed_tile.placed_pos[1] + direction.value[1])
-
-
-    # bot_state.last_tile =
-
-    # for i in range(height):
-    #     for j in range(width):
-    #         if game.can_place_tile_at(my_tiles[0], i, j):
-    #             print("hillo")
-    #             return game.move_place_tile(q, my_tiles[0], 0)
-
-
-
 # logic of whether to place meeple or not
-def handle_place_meeple(game, bot_state, q):
+def handle_place_meeple(game: Game, bot_state, q):
+    # check tile type
+    if game.state.me.num_meeples == 0:
+        return game.move_place_meeple_pass(q)
+
     return game.move_place_meeple_pass(q)
 
 
