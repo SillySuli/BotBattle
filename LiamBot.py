@@ -73,6 +73,7 @@ def handle_place_tile(game : Game, bot_state: BotState, q):
             print("River status: ", river_tile)
 
 
+
             for direction in Directions:
                 for rotation in range(0, 4):
                     # if a valid placement is found
