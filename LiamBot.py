@@ -5,7 +5,6 @@
     # Check if our tile is a monastery
     # If so, find placement where it is covered by most tiles
 
-
 # Finishing a city
     # Check if our tile is a city
     # Check current tiles if placing tile would complete city and city has our meeple
@@ -164,7 +163,6 @@ def handle_place_meeple(game: Game, bot_state, q):
     # check tile type
     if game.state.me.num_meeples == 0:
         return game.move_place_meeple_pass(q)
-
     return game.move_place_meeple_pass(q)
 
 
