@@ -113,13 +113,9 @@ def check_direction_rotation(game: Game, placed_tile, my_tile):
             # if a valid placement is found
             return check_placement_of_tile(game, placed_tile, my_tile, direction, rotation), direction
 
-
-
             # Does the tile in hand have a river in it?
             river_tile = check_for_river(my_tile)
             print("River status: ", river_tile)
-
-
 
             for direction in Directions:
                 for rotation in range(0, 4):
@@ -144,9 +140,10 @@ def check_placement_of_tile(game: Game, placed_tile, my_tile, direction, rotatio
 # Function that check if the current has a river in it
 def check_for_river(tile: Tile)-> bool:
 
-    for edge in Directions:
-        if tile.internal_edges[edge] == StructureType.RIVER:
-            return True
+    # Checking tile type based on tile_id
+    # river tiles follow "R*"
+    if "R" in tile.tile_id:
+        return True;
     return False;
 
 # logic of whether to place meeple or not
