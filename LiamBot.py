@@ -11,7 +11,6 @@
     # Check current tiles if placing tile would complete city and city has our meeple
 
 
-
 from enum import Enum
 # use when running locally
 
@@ -74,12 +73,26 @@ def handle_place_tile(game : Game, bot_state: BotState, q):
     my_tiles = game.state.my_tiles
     print(my_tiles)
 
+    # Check hand for number of river tiles
+    river_tiles = []
+    for tile in my_tiles:
+        if check_for_river(tile):
+            river_tiles.append(tile)
+
     # Tiles placed on the map
     placed_tiles = game.state.map.placed_tiles
 
+    # First deal with river tiles
+    if len(river_tiles):
+
+        for index, r_tile in enumerate(river_tiles):
+            for pd_tile in placed_tiles:
+                continue
+
+
     best_tile, index = None, None
 
-    # fix this returns none on some occasions
+    # fix this returns none on some occasions (return none when on valid tiles to be placed)
     def helper():
         local_best_things = None
         for index, my_tile in enumerate(my_tiles):
@@ -113,10 +126,6 @@ def check_direction_rotation(game: Game, placed_tile, my_tile):
             # if a valid placement is found
             return check_placement_of_tile(game, placed_tile, my_tile, direction, rotation), direction
 
-            # Does the tile in hand have a river in it?
-            river_tile = check_for_river(my_tile)
-            print("River status: ", river_tile)
-
             for direction in Directions:
                 for rotation in range(0, 4):
                     # if a valid placement is found
@@ -145,6 +154,10 @@ def check_for_river(tile: Tile)-> bool:
     if "R" in tile.tile_id:
         return True;
     return False;
+
+
+##########################################
+# Meeple logic below this
 
 # logic of whether to place meeple or not
 def handle_place_meeple(game: Game, bot_state, q):
