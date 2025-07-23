@@ -78,8 +78,13 @@ def handle_place_tile(
         # Choosing certain river tile if there are multiple
         current_r_tile = get_best_river_tile(river_tiles)
 
-        # Find avaliable position to place river tile
-        adjacent_tile, pos_x, pos_y, direction = find_place_for_river_tile(game, placed_tiles, current_r_tile)
+        for p_tile in placed_tiles:
+            applicable_placement_positions= check_adjacet_space_for_new_tile_placement(game, river_tile, p_tile)
+
+        # check for uturn
+        for pos in applicable_placement_positions:
+
+            uturn_free_rotation = get_utrun_free_rotation(game, pos, river_tile, p_tile)
 
     return
 
@@ -117,15 +122,17 @@ def get_best_river_tile(river_tiles: list[Tile])-> Tile:
     return best_tile
 
 
-'''Function for finding a applicable position for a river tile'''
-def find_place_for_river_tile(game: Game, placed_tiles: list[Tile], river_tile: Tile):
 
-    # Search all placed tiles and find a spot where the river tile can be placed
-    # return the first applicable position
-    for p_tile in placed_tiles:
-        applicable_placement_positions= check_adjacet_space_for_new_tile_placement(game, river_tile, p_tile)
+'''Function that given a placed tile and the position of the new tile,
+returns a rotation that will not cause uturn'''
+def get_utrun_free_rotation(game: Game, position: tuple[int, int], r_tile: Tile, p_tile: Tile):
 
-        # check for uturn
+    for rotation in range(0,4):
+
+        p_tile_river_edges = []
+        r_tile_river_edge = []
+
+
 
 
     return
