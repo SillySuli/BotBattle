@@ -75,9 +75,11 @@ def handle_place_tile(
     # Handling all the river tiles first
     if len(river_tiles):
 
-        # Placing the best river tile first
+        # Choosing certain river tile if there are multiple
         current_r_tile = get_best_river_tile(river_tiles)
 
+        # Find avaliable position to place river tile
+        adjacent_tile, pos_x, pos_y, direction = find_place_for_river_tile(game, placed_tiles, current_r_tile)
 
     return
 
@@ -92,7 +94,7 @@ def check_for_river(tile: Tile)-> bool:
 
 # Function that return the best river tile
 # Priority (Monastery, city, bridge / road, just river)
-def get_best_river_tile(river_tiles)-> Tile:
+def get_best_river_tile(river_tiles: list[Tile])-> Tile:
 
     # Storing all river tiles that have either a city or road in them
     city_tiles = ["R1", "R4", "R7" ]
@@ -115,7 +117,36 @@ def get_best_river_tile(river_tiles)-> Tile:
     return best_tile
 
 
+'''Function for finding a applicable position for a river tile'''
+def find_place_for_river_tile(game: Game, placed_tiles: list[Tile], river_tile: Tile):
 
+    # Search all placed tiles and find a spot where the river tile can be placed
+    # return the first applicable position
+    for p_tile in placed_tiles:
+        applicable_placement_positions= check_adjacet_space_for_new_tile_placement(game, river_tile, p_tile)
+
+        # check for uturn
+
+
+    return
+
+'''Function which checks if a new tile can be placed next to another tile given:
+    a new tile,
+    and an already placed tile
+    return position coordinates of all applicable spaces for tile placement adjacent to
+    repective placed tile'''
+def check_adjacet_space_for_new_tile_placement(game: Game, new_tile: Tile, placed_tile: Tile):
+
+    # Goes through all the directions
+    applicable_positions = []
+    for direction in Directions:
+        x_pos = placed_tile.placed_pos[0] + direction.value[0]
+        y_pos= placed_tile.placed_pos[1] + direction.value[1]
+        if game.can_place_tile_at(new_tile, x_pos, y_pos):
+                applicable_positions.append((x_pos, y_pos))
+
+    print("Applicable direction are:", applicable_positions)
+    return applicable_positions
 
 ##############################
 # Logic for meeple below this
